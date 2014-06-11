@@ -21,7 +21,9 @@ public class VentanaPrincipal extends JFrame {
 	private JTextField horaEntradaTxt;
 	private JTextField horaSalidaTxt;
 	private JTextField precioPagarTxt;
-
+	private Coche coche;
+	private JComboBox<Coche> coches;
+	private DB datos;
 	/**
 	 * Launch the application.
 	 */
@@ -50,9 +52,22 @@ public class VentanaPrincipal extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		JComboBox listadoCoches = new JComboBox();
-		listadoCoches.setBounds(10, 29, 414, 20);
-		contentPane.add(listadoCoches);
+		coches = new JComboBox();
+		coches.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				//Cojemos del comboBox la informacion y la pone en su sitio
+				coche=coches.getItemAt(coches.getSelectedIndex());
+				if(coche!=null)
+				{
+				matriculaTxt.setText(coche.getMatricula());
+				horaEntradaTxt.setText(String.valueOf(coche.gethoraentrada()));
+				horaSalidaTxt.setText(String.valueOf(coche.gethorasalida()));
+				precioPagarTxt.setText(String.valueOf(coche.getprecio()));
+			
+			}}
+		});
+		coches.setBounds(10, 29, 414, 20);
+		contentPane.add(coches);
 		
 		JLabel lblListadoDeCoches = new JLabel("Listado de coches");
 		lblListadoDeCoches.setBounds(10, 4, 151, 14);
@@ -96,9 +111,53 @@ public class VentanaPrincipal extends JFrame {
 		contentPane.add(precioPagarTxt);
 		
 		JButton btnNewButton = new JButton("A PAGAR");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				//Aquí realizaremos los siguientes pasos
+				//1.- Comprobaremos que todos los campos están completados
+				if((matriculaTxt.getText()).equals("")){
+					JOptionPane.showMessageDialog(null, "Has introducido mal la Matricula");
+				}
+				else if((horaEntradaTxt.getText().equals(""))){
+					JOptionPane.showMessageDialog(null, "Has introducido mal la hora de entrada");
+				}
+				else if((Integer.parseInt(horaEntradaTxt.getText()) > 23)){
+					JOptionPane.showMessageDialog(null, "La hora de entrada es mayor a a 23");				
+				}
+				else if((Integer.parseInt(horaEntradaTxt.getText())<0)){
+					JOptionPane.showMessageDialog(null, "La hora de entrada es menor a 0");				
+				}
+				else if((horaSalidaTxt.getText()).equals("")){
+					JOptionPane.showMessageDialog(null, "Has introducido mal la hora de salida");
+				} 
+				else if((Integer.parseInt(horaSalidaTxt.getText()) > 23)){
+					JOptionPane.showMessageDialog(null, "La hora de salida es mayor a a 23");				
+				}
+				else if((Integer.parseInt(horaSalidaTxt.getText())<0)){
+					JOptionPane.showMessageDialog(null, "La hora de salida es menor a 0");				
+				}
+				else if(Integer.parseInt(horaSalidaTxt.getText()) > Integer.parseInt(horaEntradaTxt.getText())){
+					JOptionPane.showMessageDialog(null, "La hora de salida es mayor a la de entrada");
+				}
+				else{
+				//2.- Crearemos un nuevo objeto delincuente
+				Coche del=new Coche();
+				int ID=0;
+				del.setMatricula(matriculaTxt.getText());
+				del.sethoraentrada(Integer.parseInt(horaEntradaTxt.getText()));
+				del.setId(ID);
+				del.sethorasalida(Integer.parseInt(horaSalidaTxt.getText()));
+				int calcula=(Integer.parseInt(horaEntradaTxt.getText())-Integer.parseInt(horaSalidaTxt.getText()))*2;
+				precioPagarTxt.setText(String.valueOf(calcula));
+				//3.- Lo almacenaremos en el ComboBox
+				//coches.addItem(del);
+				}
+			}
+		});
 		btnNewButton.setBounds(230, 58, 194, 128);
 		contentPane.add(btnNewButton);
-		
+		datos=new DB(coches);
+		datos.leerCoches();
 		
 	}
 }
